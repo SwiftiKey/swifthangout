@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+        .container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .field {
+            margin-bottom: 15px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .red-button {
+            background-color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Профиль</h1>
+        <p id="welcome">Добро пожаловать, <span id="username"></span>!</p>
+        <p>Email: <span id="email"></span></p>
+
+        <div class="field">
+            <label>Изменить email:</label>
+            <input type="email" id="newEmail" placeholder="Новый email">
+        </div>
+
+        <div class="field">
+            <label>Изменить пароль:</label>
+            <input type="password" id="newPassword" placeholder="Новый пароль">
+        </div>
+
+        <button onclick="updateProfile()">Сохранить изменения</button>
+        <button onclick="logout()" class="red-button">Выйти</button>
+        <button onclick="goToLenta()" style="margin-top: 10px;">Вернуться в ленту</button>
+    </div>
+
+    <script>
+        const currentUser = localStorage.getItem('currentUser');
+
+        if (!currentUser) {
+            alert('Сессия истекла. Пожалуйста, войдите снова.');
+            window.location.href = "login.html";
+        }
+
+        // Отображение текущих данных
+        document.getElementById('username').innerText = currentUser;
+        document.getElementById('email').innerText = localStorage.getItem(`${currentUser}_email`);
+
+        function updateProfile() {
+            const newEmail = document.getElementById('newEmail').value;
+            const newPassword = document.getElementById('newPassword').value;
+
+            if (newEmail) {
+                localStorage.setItem(`${currentUser}_email`, newEmail);
+                alert('Email успешно обновлён!');
+            }
+
+            if (newPassword) {
+                localStorage.setItem(`${currentUser}_password`, newPassword);
+                alert('Пароль успешно обновлён!');
+            }
+
+            // Обновляем отображение
+            document.getElementById('email').innerText = localStorage.getItem(`${currentUser}_email`);
+            document.getElementById('newEmail').value = '';
+            document.getElementById('newPassword').value = '';
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            alert('Вы вышли из системы.');
+            window.location.href = "login.html";
+        }
+
+        function goToLenta() {
+            window.location.href = "lenta.html"; // Переход на страницу ленты новостей
+        }
+    </script>
+</body>
+</html>

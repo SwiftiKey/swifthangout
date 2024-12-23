@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мессенджер</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #2d2d2d;
+            color: #f0f0f0;
+            margin: 0;
+        }
+        .header {
+            background: #444444;
+            color: #f0f0f0;
+            padding: 15px 20px;
+            text-align: center;
+        }
+        .header button {
+            background: #555555;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 10px;
+        }
+        .header button:hover {
+            background: #666666;
+        }
+        .message {
+            background: #333333;
+            padding: 15px;
+            margin: 10px;
+            border-radius: 5px;
+        }
+        .message input {
+            width: 80%;
+            padding: 10px;
+            margin: 10px;
+        }
+        .send-button {
+            background: #555555;
+            padding: 10px 20px;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Мессенджер</h1>
+        <button onclick="goToProfile()">Профиль</button>
+        <button onclick="goToLenta()">Лента новостей</button>
+        <button onclick="goToFriends()">Друзья</button>
+    </div>
+
+    <div id="messages-container">
+        <!-- Здесь будут отображаться сообщения -->
+    </div>
+
+    <div class="message">
+        <input type="text" id="message-text" placeholder="Введите сообщение...">
+        <button class="send-button" onclick="sendMessage()">Отправить</button>
+    </div>
+
+    <script>
+        const currentUser = localStorage.getItem('currentUser');
+        const messagesContainer = document.getElementById('messages-container');
+
+        // Загружаем сообщения
+        const messages = JSON.parse(localStorage.getItem('messages')) || [];
+
+        messages.forEach(message => {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message');
+            messageDiv.textContent = `${message.username}: ${message.text}`;
+            messagesContainer.appendChild(messageDiv);
+        });
+
+        function goToProfile() {
+            window.location.href = "profile.html";
+        }
+
+        function goToLenta() {
+            window.location.href = "lenta.html";
+        }
+
+        function goToFriends() {
+            window.location.href = "friends.html";
+        }
+
+        function sendMessage() {
+            const messageText = document.getElementById('message-text').value;
+            if (messageText.trim() !== '') {
+                const newMessage = {
+                    username: currentUser,
+                    text: messageText
+                };
+
+                // Добавляем сообщение в localStorage
+                let messages = JSON.parse(localStorage.getItem('messages')) || [];
+                messages.push(newMessage);
+                localStorage.setItem('messages', JSON.stringify(messages));
+
+                // Обновляем страницу
+                window.location.reload();
+            } else {
+                alert('Пожалуйста, введите сообщение!');
+            }
+        }
+    </script>
+</body>
+</html>
