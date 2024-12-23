@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лента новостей</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #2d2d2d;
+            color: #f0f0f0;
+            margin: 0;
+        }
+        .header {
+            background: #444444;
+            color: #f0f0f0;
+            padding: 15px 20px;
+            text-align: center;
+        }
+        .header button {
+            background: #555555;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 10px;
+        }
+        .header button:hover {
+            background: #666666;
+        }
+        .post {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 15px;
+            background: #333333;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        .post h3 {
+            margin: 0;
+            color: #ccc;
+        }
+        .post p {
+            margin: 10px 0 0;
+            color: #bbb;
+        }
+        .post .delete-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .post .delete-button:hover {
+            background: #c0392b;
+        }
+        .post-button {
+            background: #555555;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .post-button:hover {
+            background: #666666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Лента новостей</h1>
+        <p>Привет, <span id="username"></span>!</p>
+
+        <!-- Кнопки для навигации -->
+        <button onclick="goToProfile()">Профиль</button>
+        <button onclick="goToFriends()">Друзья</button>
+        <button onclick="goToMessenger()">Мессенджер</button>
+    </div>
+
+    <!-- Кнопка для создания поста -->
+    <div class="header">
+        <button class="post-button" onclick="submitPost()">Опубликовать пост</button>
+    </div>
+
+    <div id="posts-container">
+        <!-- Здесь будут отображаться посты -->
+    </div>
+
+    <script>
+        // Получаем текущего пользователя из localStorage
+        const currentUser = localStorage.getItem('currentUser');
+        const usernameElement = document.getElementById('username');
+        usernameElement.textContent = currentUser;
+
+        // Проверяем, является ли текущий пользователь администратором
+        const postsContainer = document.getElementById('posts-container');
+        if (currentUser) {
+            // Загружаем посты
+            loadPosts();
+        } else {
+            alert("Пожалуйста, войдите в систему!");
+            window.location.href = 'login.html';
+        }
+
+        // Функция для перехода в профиль
+        function goToProfile() {
+            window.location.href = "profile.html";
+        }
+
+        // Функция для перехода в список друзей
+        function goToFriends() {
+            window.location.href = "friends.html";
+        }
+
+        // Функция для перехода в мессенджер
+        function goToMessenger() {
+            window.location.href = "messenger.html";
+        }
+
+        // Функция загрузки постов
+        function loadPosts() {
+            const posts = JSON.parse(localStorage.getItem('posts')) || [];
+            posts.forEach(post => {
+                const postDiv = document.createElement('div');
+                postDiv.classList.add('post');
+                postDiv.id = `post-${post.id}`;
+                postDiv.innerHTML = `
+                    <h3>Пользователь: ${post.username}</h3>
+                    <p>${post.text}</p>
+                    ${post.username === currentUser || currentUser === 'admin' ? `<button class="delete-button" onclick="deletePost(${post.id})">Удалить</button>` : ''}
+                `;
+                postsContainer.appendChild(postDiv);
+            });
+        }
+
+        // Функция отправки нового поста
+        function submitPost() {
+            const newPostText = prompt("Введите текст вашего поста:");
+            if (newPostText && newPostText.trim() !== '') {
+                const newPost = {
+                    id: Date.now(),
+                    username: currentUser,
+                    text: newPostText
+                };
+
+                // Добавляем новый пост в localStorage
+                let posts = JSON.parse(localStorage.getItem('posts')) || [];
+                posts.push(newPost);
+                localStorage.setItem('posts', JSON.stringify(posts));
+
+                // Перезагружаем страницу для отображения нового поста
+                window.location.reload();
+            } else {
+                alert('Пожалуйста, введите текст поста!');
+            }
+        }
+
+        // Функция удаления поста
+        function deletePost(postId) {
+            let posts = JSON.parse(localStorage.getItem('posts')) || [];
+            posts = posts.filter(post => post.id !== postId);
+            localStorage.setItem('posts', JSON.stringify(posts));
+
+            // Перезагружаем страницу для обновления ленты
+            window.location.reload();
+        }
+    </script>
+</body>
+</html>
